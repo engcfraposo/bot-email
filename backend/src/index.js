@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors')
 
 const EmailController = require('./controllers/EmailController')
+const LinkController = require('./controllers/LinkController')
 
 
 const app = express();
@@ -18,7 +19,10 @@ app.use(cors());
 app.use(express.json());
 
 
-app.post('/', EmailController.store)
-app.get('/', EmailController.index)
+app.post('/email', EmailController.store)
+app.get('/email', EmailController.index)
+
+app.post('/link', LinkController.store)
+app.get('/link', LinkController.index)
 
 app.listen(3001);
