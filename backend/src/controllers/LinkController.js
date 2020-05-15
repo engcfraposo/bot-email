@@ -1,4 +1,3 @@
-const pdfparse = require('pdf-parse')
 const axios = require('axios')
 const parseStringAsArray = require('../utils/parseStringAsArray')
 const Link = require('../models/Links');
@@ -38,24 +37,35 @@ module.exports = {
            const pdfData = pdfHref.flat().filter(it => it.includes('pdf'))
 
             
-            pdfData.forEach( aspas =>  {
+            pdfData.map( aspas =>  {
                 const pdfAspas = aspas.split('"').map(event => event.trim());
 
                 const pdfText = pdfAspas.flat().filter(it => it.includes('pdf'))
 
-                pdfText.forEach( element =>  {
+
+                pdfText.map( pdfs =>  {
                     
-                    const sufixo = element;
                     
+                    const sufixo = pdfs;
+
                     const pdf = `https://www.editorarealize.com.br/revistas/conedu/${sufixo}`;
+                     
 
-                    link = Link.create({
-                        pdf
-                    })
 
-                    return console.log(pdf);
+                        link =  Link.create({
+
+                            pdf,
+                            
+                        })
+
+
+
+                        return console.log(pdf)
                 });
+
                 
+                
+
             });
             
         });

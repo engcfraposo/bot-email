@@ -1,9 +1,12 @@
-const pdfparse = require('pdf-parse')
+const http = require('http');
+const https = require('https');
+const pdfparse = require('pdf-parse');
+const fs = require('fs')
 const parseStringAsArray = require('../utils/parseStringAsArray')
+const batchModel = require('../utils/batchModel')
+
 const Email = require('../models/Emails');
 const Link = require('../models/Links');
-const async = require('async')
-
 
 
 module.exports = {
@@ -16,37 +19,76 @@ module.exports = {
     },
 
     
-    async store(request, response){
+    async store(request, response, next){
+        
+        
 
+        const amountOfDocuments = await Link.countDocuments();
 
-        const link = await Link.find();
+        const batchSize = 1;
 
+        let processedDocuments = 0;
 
-        async.map(link, async function (data) {
+        let lastProcessedId = null;
 
-            const pdf = data.pdf
-            
-            return pdfparse(pdf).then( function (data){
+        
 
-                const textArray = parseStringAsArray(data.text);
+        while( processedDocuments < amountOfDocuments ) {
 
-                const email = textArray.flat().filter(it => it.includes('@'))
-
-                return async.mapSeries(email, function(emails) {
-                    
-                   const emailSet = emails
-                    
-                   return console.log(emailSet)
-                   
-                   
-                });
-                
-                
-            })     
+            const links = await batchModel(Link, batchSize, lastProcessedId) 
 
             
-        },)
+            for (const data of links) {
+                
+                const { pdf, link_id } = data;
+               
 
-    }   
+                    const dataLink = await pdfparse(pdf)
+                                
+                    const  pdfArray = parseStringAsArray(dataLink.text)
+
+                    const pdfParse = pdfArray.flat().filter(it => it.includes('@'))
+                        
+                    for (const data of pdfParse) {
+
+                        const email = data
+                        
+                        
+
+                        console.log(email)
+                    }
+                    console.log(link_id)
+                    
+               
+
+
+            }
+            
+                    processedDocuments += batchSize;
+
+                    lastProcessedId += 1
+                
+                   
+            
+        }
+    }         
+           
+       
+
+            
+            
+        
+        
+
+         
+                
+
+               
+                
+       
+                
+        
+
+        
               
 }
