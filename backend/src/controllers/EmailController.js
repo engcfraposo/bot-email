@@ -1,15 +1,13 @@
-const http = require('http');
-const https = require('https');
-const pdfparse = require('pdf-parse');
-const fs = require('fs')
-const parseStringAsArray = require('../utils/parseStringAsArray')
-const batchModel = require('../utils/batchModel')
+import Queue from '../lib/Queue'
+import pdfparse from 'pdf-parse';
+import parseStringAsArray from '../utils/parseStringAsArray';
+import batchModel from '../utils/batchModel';
 
-const Email = require('../models/Emails');
-const Link = require('../models/Links');
+import Email from '../models/Emails';
+import Link from '../models/Links';
 
 
-module.exports = {
+export default {
 
     async index(request, response){
 
@@ -21,7 +19,6 @@ module.exports = {
     
     async store(request, response, next){
         
-        
 
         const amountOfDocuments = await Link.countDocuments();
 
@@ -32,34 +29,20 @@ module.exports = {
         let lastProcessedId = null;
 
         
-
         while( processedDocuments < amountOfDocuments ) {
 
             const links = await batchModel(Link, batchSize, lastProcessedId) 
 
-            
             for (const data of links) {
                 
-                const { pdf, link_id } = data;
-               
-
-                    const dataLink = await pdfparse(pdf)
-                                
-                    const  pdfArray = parseStringAsArray(dataLink.text)
-
-                    const pdfParse = pdfArray.flat().filter(it => it.includes('@'))
-                        
-                    for (const data of pdfParse) {
-
-                        const email = data
-                        
-                        
-
-                        console.log(email)
-                    }
-                    console.log(link_id)
                     
+                    const { pdf, link_id } = data;
                
+                    const dataLink = await Queue.add({pdf})
+                                
+                    
+
+                    
 
 
             }

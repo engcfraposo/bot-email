@@ -3,7 +3,7 @@ const parseStringAsArray = require('../utils/parseStringAsArray')
 const Link = require('../models/Links');
 
 
-module.exports = {
+export default{
 
     async index(request, response){
 

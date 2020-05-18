@@ -1,12 +1,14 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors')
+import 'dotenv/config';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from'cors';
 
-const EmailController = require('./controllers/EmailController')
-const LinkController = require('./controllers/LinkController')
+import EmailController from './controllers/EmailController'
+import LinkController from './controllers/LinkController'
 
 
 const app = express();
+
 
 
 mongoose.connect('mongodb+srv://omnistack:omnistack@omnistack9-ub5tj.gcp.mongodb.net/bancodeemail?retryWrites=true&w=majority', {
@@ -14,7 +16,7 @@ mongoose.connect('mongodb+srv://omnistack:omnistack@omnistack9-ub5tj.gcp.mongodb
     useUnifiedTopology: true,
     useFindAndModify: false,
     useCreateIndex: true
-})
+}).then('Conected in the Database')
 
 
 app.use(cors());
